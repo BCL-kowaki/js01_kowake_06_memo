@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+  <script src="js/script.js"></script>
+    <title>Document</title>
+</head>
+<body>
+<section id="wrapper">  
+<nav>
+    <ul>
+        <li><a href="/">トップ</a></li>
+        <li><a href="/memo.html">メモ</a></li>
+        <li><a href="/chart.html">表</a></li>
+    </ul>
+ </nav>
+ <main>
+    <section id="main_contents">
+    <div class="inner">
+    <div id="curve_chart"></div>
+
+<div class="scroll">
+    <table id="data_table">
+        <tr>
+          <th id="day">日付</th>
+          <th id="valueA">総コスト</th>
+          <th id="valueB">獲得単価</th>
+          <th id="valueC">クリック数</th>
+          <th id="valueD">登録数</th>
+          <th id="valueE">登録率</th>
+          <th id="valueF">個人情報取得数</th>
+          <th id="valueG">個人情報獲得単価</th>
+          <th id="valueH">広告経由売上</th>
+          <th id="valueI">広告経由入金数</th>
+          <th id="valueJ">ROAS</th>
+        </tr>
+         <!-- データ行のサンプルを追加 -->
+            <!--  <tr>
+                  <td>2024-05-20</td>
+                  <td>10</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                  <td>20</td>
+                </tr>-->   
+      </table> 
+    </div> 
+      <div class="button_area">
+      <button id="add">追加</button>
+      <button id="update">更新</button>
+      <button id="export">エクスポート</button>
+      <input type="file" id="importFile" accept=".csv" style="display: none;">
+      <button id="import">インポート</button>
+      <button id="save">保存</button>
+      <button id="load">読み込み</button>  
+    </div>  
+    </div>  
+    </main> 
+</section>  
+    <footer>コピーライト</footer>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+  
+        // Google chartを読み込み
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        // グラフを描画する関数
+        function drawChart() {
+            // テーブルデータを取得してGoogle chart用のデータ形式に変換
+            var data = google.visualization.arrayToDataTable(getTableData(), false);
+
+            // グラフのオプション設定
+            var options = {
+                title: '会社業績',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            // グラフを描画する要素を取得し、グラフを描画
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);
+        }
+
+        // テーブルからデータを取得する関数  
+        function getTableData() {
+            // テーブル要素を取得
+            var table = document.getElementById('data_table');
+            // テーブルの行を取得
+            var rows = table.getElementsByTagName('tr');
+            // テーブルのヘッダー行を設定
+            var data = [['日付', '総コスト', '獲得単価', 'クリック数', '登録数', '登録率', '個人情報取得数', '個人情報獲得単価', '広告経由売上', '広告経由入金数', 'ROAS']];
+
+            // テーブルの各行をループ処理
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName('td');
+                var row = [];
+                for (var j = 0; j < cells.length; j++) {
+                    var cellText = cells[j].innerText || cells[j].textContent;
+                    if (j === 0) {
+                        row.push(cellText); // 日付は文字列として追加
+                    } else {
+                        var num = parseFloat(cellText.replace(/,/g, '')); // カンマを削除して数値に変換
+                        row.push(isNaN(num) ? 0 : num); // 数値に変換できない場合は0を追加
+                    }
+                }
+                data.push(row);
+            }
+            console.log("getTableData: ", data); // デバッグ用
+            return data;
+        }
+
+        // 新しい行を追加する関数
+        function addRow() {
+            // テーブル要素を取得
+            var table = document.getElementById('data_table');
+            // 新しい行を作成
+            var newRow = table.insertRow();
+
+            // 新しいセルを作成し、IDを設定して編集可能にする
+            for (var i = 0; i < 11; i++) {
+                var newCell = newRow.insertCell();
+                newCell.contentEditable = 'true';
+            }
+        }
+
+        // CSVをエクスポートする関数
+        function exportCSV() {
+            var data = getTableData();
+            var csvContent = "data:text/csv;charset=utf-8,";
+
+            data.forEach(function(rowArray) {
+                let row = rowArray.join(",");
+                csvContent += row + "\r\n";
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // CSVをインポートする関数
+        function handleFileSelect(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var contents = e.target.result;
+            var rows = contents.split("\n");
+            var table = document.getElementById('data_table'); // table変数をここで定義
+            rows.forEach(function(row, index) {
+                if (index === 0) {
+                    // 最初の行はスキップ
+                    console.log("Skipping header row: ", row);
+                    return;
+                }
+
+                var cols = row.split(",");
+                console.log("CSV cols: ", cols); // デバッグ用
+                if (cols.length > 1 && row.trim() !== "") { // 空行を無視
+                    var newRow = table.insertRow();
+                    for (var i = 0; i < cols.length; i++) {
+                        var newCell = newRow.insertCell();
+                        newCell.textContent = cols[i].trim(); // 余分な空白を削除
+                        newCell.contentEditable = 'true';
+                    }
+                }
+            });
+            console.log("Table rows after import: ", table.rows); // デバッグ用
+            drawChart();
+        };
+        reader.readAsText(file);
+    }
+}
+
+
+        // テーブルデータをLocalStorageに保存する関数
+        function saveData() {
+    var data = getTableData();
+    localStorage.setItem('tableData', JSON.stringify(data));
+    alert('データが保存されました');
+}
+
+
+        // LocalStorageからテーブルデータを読み込む関数
+        function loadData() {
+            var data = JSON.parse(localStorage.getItem('tableData'));
+            if (data) {
+                var table = document.getElementById('data_table');
+
+                // 既存の行をクリア
+                var rowCount = table.rows.length;
+                for (var i = rowCount - 1; i > 0; i--) {
+                    table.deleteRow(i);
+                }
+
+                // データをテーブルに追加
+                data.forEach(function(row, index) {
+                    if (index > 0) { // ヘッダー行をスキップ
+                        var newRow = table.insertRow();
+                        row.forEach(function(cellData) {
+                            var newCell = newRow.insertCell();
+                            newCell.textContent = cellData;
+                            newCell.contentEditable = 'true';
+                        });
+                    }
+                });
+                drawChart();
+                alert('データが読み込まれました');
+            } else {
+                alert('保存されたデータが見つかりません');
+            }
+        }
+
+        // ページのDOMコンテンツが読み込まれた後に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            // "追加"ボタンがクリックされたときにaddRow関数を呼び出す
+            document.getElementById('add').addEventListener('click', addRow);
+            // "更新"ボタンがクリックされたときにdrawChart関数を呼び出す
+            document.getElementById('update').addEventListener('click', drawChart);
+            // "エクスポート"ボタンがクリックされたときにexportCSV関数を呼び出す
+            document.getElementById('export').addEventListener('click', exportCSV);
+            // "インポート"ボタンがクリックされたときにファイル入力をトリガーする
+            document.getElementById('import').addEventListener('click', function() {
+                document.getElementById('importFile').click();
+            });
+            // ファイル入力が変更されたときにimportCSV関数を呼び出す
+            document.getElementById('importFile').addEventListener('change', handleFileSelect);
+            // "保存"ボタンがクリックされたときにsaveData関数を呼び出す
+            document.getElementById('save').addEventListener('click', saveData);
+            // "読み込み"ボタンがクリックされたときにloadData関数を呼び出す
+            document.getElementById('load').addEventListener('click', loadData);
+        });
+        </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+@charset "UTF-8";
+
+/* reset
+------------------------*/
+
+html,
+body,
+h1,
+h2,
+p,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  line-height: 1.0;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  border: none;
+  vertical-align: bottom;
+  max-width: 100%;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  background: #fff;
+  color: #333;
+  font-size: 1.6rem;
+  font-family:"游ゴシック",YuGothic,"Hiragino Kaku Gothic ProN",Meiryo, sans-serif;
+}
+
+footer{
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+}
+
+/* base
+------------------------*/
+
+#wrapper{
+    display: flex;
+    justify-content: space-between;
+}
+
+main{
+    width: 1280px;
+    background: #f2f2f2;
+    padding: 5px;
+}
+#main_contents{
+    width: 100%;
+    margin: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 3px #ccc;
+    padding: 10px 0 40px 0;
+}
+
+#main_contents .inner{
+    max-width: 95%;
+    margin: auto;
+    overflow-y: scroll;
+}
+
+
+/* nav
+------------------------*/
+
+nav{
+    width: 100px;
+    height: 100vh;
+    background: #fff;
+    box-shadow: 0 0 3px #ccc;
+    position: relative;
+    right: 0;
+}
+nav ul{
+    width: 95%;
+    margin: auto;
+    padding: 10px 0;
+}
+
+nav ul li{
+    border-bottom: 1px solid #eee;
+    padding: 10px 0 15px 0;
+    font-size: 12px;
+    transition: .5s;
+    text-align: center;
+    color: #27acd9;
+}
+nav ul li:hover{
+    color: #fff;
+    background: #27acd9;
+}
+nav ul li a{
+}
+
+
+/* table
+------------------------*/
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    border: solid 1px #27acd9;
+}
+table tr{
+    text-align: center;
+}
+table tr th{
+    font-size: 12px;
+    padding: 20px 5px;
+    background: #27acd9;
+    color: #fff;
+    border-bottom: solid 1px #fff;
+    border-right: solid 1px #fff;
+}
+table tr td{
+    border: dashed 1px #27acd9;
+    border-right: solid 1px #27acd9;
+    padding: 20px 5px;
+    color: #27acd9;
+}
+
+#curve_chart{
+    width: 100%;
+    height: 540px;
+}
+#curve_chart rect{
+    width: 100%!important;
+    margin-left: -200px!important;
+}
+.scroll{
+    width: 100%;
+    height: 800px;
+    overflow: scroll;
+}
+
+
+/* button
+------------------------*/
+
+.button_area{
+    padding: 20px 0;
+}
+button {
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	width: 140px;
+	margin: auto;
+	padding: 1rem 2rem;
+	font-weight: bold;
+	border: 2px solid #27acd9;
+	background: #27acd9;
+	color: #fff;
+	border-radius: 100vh;
+	transition: 0.5s;
+}
+button:hover {
+	color: #27acd9;
+	background: #fff;
+}
+
+
+/* memo.html
+------------------------*/
+
+
+#finder{
+    width: 20%;
+    background: #FBFBFD;
+    border-right: 1px solid #aaa;
+}
+#finder h2{
+    font-size: 18px;
+    transition: 0.5s;
+    padding: 15px 5px;
+    border-radius: 10px;
+    }
+    #finder h2:hover{
+        background: #f0f0f0;
+    }
+    #finder h2:active{
+        background: #f0f0f0;
+    }  
+    
+.newFinde{
+    width: 20%;
+    color: #EABB00;
+    font-size: 18px;
+    transition: 0.5s;
+    padding: 5px;
+    position: fixed;
+    bottom: 1%;
+}  
+.newFinde:hover{
+    opacity: 0.8;
+}  
+.newFinde > div{
+}   
+.newFindeBtn {
+}   
+
+.findeDelete{
+    position: relative;
+    right: 1%;
+}
+.findeDelete i{
+}
+
+#finder{
+    width: 20%;
+    background: #FBFBFD;
+    border-right: 1px solid #aaa;
+}
+#finder ul{
+    font-size: 18px;
+    transition: 0.5s;
+    padding: 0 5px 5px;
+}
+#finder ul li{
+    font-size: 16px;
+    transition: 0.5s;
+    padding: 8px 5px;
+    border-radius: 10px;
+}
+#finder ul li::before{
+  font-family: "Font Awesome 5 Free";
+  content: "\f07b";
+  color: #EABB00;
+  margin-right: 5px;
+  font-size: 1.2rem;
+}
+#finder ul li:hover{
+    background: #f0f0f0;
+}
+#finder ul li:active{
+    background: #f0f0f0;
+}  
+
+#memoTitle{
+    padding: 20px 0;
+    width: 90%;
+    margin: auto;
+    background: #FFF;
+}
+
+#prompt{
+    margin: 20px 0;
+}
+#prompt h1{
+    background: #27acd9;
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 15px 10px 10px 10px;
+}
+#memoField{
+    margin: 20px 0;
+}
+#memoField h1{
+    background: #27acd9;
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    padding: 15px 10px 10px 10px;
+}
+
+
+/* keep
+------------------------*/
+
+#keepArea{
+    width: 100%;
+    margin: 20px auto;
+}
+#keepArea ul{ 
+    display: flex;
+    justify-content: start;
+}
+#keepArea ul li{
+    border: 2px solid #27acd9;
+    background: #fff;
+    box-shadow: 0px 0px 3px #aaa;
+    width: 150px;
+    height: 200px;
+    padding: 10px 10px;
+    text-align: left;
+    font-size: 12px;
+    line-height: 150%;
+    margin: 0 5px;
+    color: #27acd9;
+}
+
+.question {
+    font-weight: bold;
+  }
+  
+  .answer {
+    margin-top: 10px;
+  }
+
+
+
+
+/* 
+------------------------*/
+
+
+textarea{
+    width: 97.5%;
+    height: 200px;
+    border: 2px solid #27acd9;
+    border-radius: 0 0 10px 10px;
+    padding: 10px;
+}
+
+
+/*  右クリック削除選択
+------------------------*/
+
+.context-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+}
+
+.context-menu ul {
+    list-style-type: none;
+    padding: 5px;
+    margin: 0;
+}
+
+.context-menu ul li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.context-menu ul li:hover {
+    background-color: #ddd;
+}
+
+
+/*  タイプライター風
+------------------------*/
+
+#summaryOutput.typing::after {
+    width: 23ch;
+    animation: typing 3s steps(23), effect .5s step-end infinite alternate;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid;
+    font-family: monospace;
+    font-size: 2em;
+  }
+   
+  @keyframes typing {
+    from {
+      width: 0
+    }
+  }
+      
+  @keyframes effect {
+    50% {
+      border-color: transparent
+    }
+  }

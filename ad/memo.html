@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+  <script src="js/script.js"></script>
+    <title>Document</title>
+</head>
+<body>
+<section id="wrapper">  
+<nav>
+    <ul>
+        <li><a href="/">トップ</a></li>
+        <li><a href="/memo.html">メモ</a></li>
+        <li><a href="/chart.html">表</a></li>
+    </ul>
+ </nav>
+ <main>
+    <section id="main_contents">
+    <div class="inner">
+        <section id="memoTitle">
+            <section id="prompt">
+                <h1>質問入れてください</h1>
+                <textarea id="promptInput"></textarea>
+            </section>
+            <section id="memoField">
+                <h1>回答は以下です</h1>
+                <textarea id="summaryOutput"></textarea>
+            </section>
+            <div class="button_area">
+                <button id="summary">質問</button>
+                <button id="keep">保存</button>
+                <button id="new">新規</button> <!-- 新規ボタンを追加 -->
+            </div>
+            <section id="keepArea">
+                <ul id="savedSummaries">
+                    <!-- ここに保存された内容が追加されます -->
+                </ul>
+            </section>
+            <div id="contextMenu" class="context-menu">
+                <ul>
+                    <li id="deleteOption">削除</li>
+                </ul>
+            </div>
+        </section>
+    </div>  
+    </main> 
+</section>  
+    <footer>コピーライト</footer>
+    <script type="text/javascript">
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    // 必要な変数を設定
+    const apiKey = 'openai API key'; // 取得したAPIキーをここに入力
+    const apiUrl = 'https://api.openai.com/v1/chat/completions'; // チャット用エンドポイント
+
+    // 要素の取得
+    const promptInput = document.getElementById('promptInput');
+    const summaryOutput = document.getElementById('summaryOutput');
+    const summaryButton = document.getElementById('summary');
+    const keepButton = document.getElementById('keep');
+    const newButton = document.getElementById('new');
+    const savedSummariesList = document.getElementById('savedSummaries');
+    const contextMenu = document.getElementById('contextMenu');
+    const deleteOption = document.getElementById('deleteOption');
+
+    let currentLi = null; // 右クリックされたリストアイテムを保持
+
+    // リクエストヘッダーを設定
+    const headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': `Bearer ${apiKey}`
+    };
+
+    // タイプライターアニメーションを表示する関数
+    function showLoadingAnimation(element) {
+        element.classList.add('typing');
+        element.value = ''; // クリアしてからアニメーション開始
+    }
+
+    // タイプライターアニメーションを停止する関数
+    function hideLoadingAnimation(element) {
+        element.classList.remove('typing');
+    }
+
+    // タイプライターエフェクトを実装する関数
+    function typeWriter(text, element) {
+        let i = 0;
+        element.value = ''; // 最初にテキストエリアをクリア
+
+        function type() {
+            if (i < text.length) {
+                element.value += text.charAt(i);
+                i++;
+                setTimeout(type, 50); // 50ミリ秒ごとに1文字追加
+            }
+        }
+
+        type();
+    }
+
+    // 質問ボタンのクリックイベントリスナーを追加
+    summaryButton.addEventListener('click', async () => {
+        const userInput = promptInput.value;
+
+        if (!userInput) {
+            alert('質問を入力してください');
+            return;
+        }
+
+        const data = {
+            model: 'gpt-4', // 使用するモデルを指定
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                { role: 'user', content: userInput }
+            ]
+        };
+
+        try {
+            showLoadingAnimation(summaryOutput); // ロード中のアニメーションを表示
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.json();
+
+            hideLoadingAnimation(summaryOutput); // ロード中のアニメーションを停止
+
+            if (result && result.choices && result.choices.length > 0) {
+                const answer = result.choices[0].message.content;
+                typeWriter(answer, summaryOutput); // タイプライターエフェクトで表示
+            } else {
+                alert('予期しない応答を受け取りました');
+                console.error('予期しない応答:', result);
+            }
+        } catch (error) {
+            hideLoadingAnimation(summaryOutput); // ロード中のアニメーションを停止
+            console.error('エラーが発生しました:', error);
+            alert('質問中にエラーが発生しました');
+        }
+    });
+
+    // 保存ボタンのクリックイベントリスナーを追加
+    keepButton.addEventListener('click', () => {
+        const questionText = promptInput.value;
+        const answerText = summaryOutput.value;
+
+        if (!questionText || !answerText) {
+            alert('保存する質問と回答がありません');
+            return;
+        }
+
+        const savedPairs = JSON.parse(localStorage.getItem('savedPairs') || '[]');
+        savedPairs.push({ question: questionText, answer: answerText });
+        localStorage.setItem('savedPairs', JSON.stringify(savedPairs));
+        displaySavedPairs();
+    });
+
+    // 新規ボタンのクリックイベントリスナーを追加
+    newButton.addEventListener('click', () => {
+        promptInput.value = ''; // 質問テキストエリアをクリア
+        summaryOutput.value = ''; // 回答テキストエリアをクリア
+    });
+
+    // 保存された質問と回答を表示する関数
+    function displaySavedPairs() {
+        savedSummariesList.innerHTML = '';
+        const savedPairs = JSON.parse(localStorage.getItem('savedPairs') || '[]');
+
+        savedPairs.forEach((pair, index) => {
+            const li = document.createElement('li');
+
+            // 質問部分
+            const questionDiv = document.createElement('div');
+            questionDiv.textContent = `Q: ${pair.question.slice(0, 20)}${pair.question.length > 20 ? '...' : ''}`;
+            questionDiv.classList.add('question');
+            li.appendChild(questionDiv);
+
+            // 回答部分
+            const answerDiv = document.createElement('div');
+            answerDiv.textContent = `A: ${pair.answer.slice(0, 50)}${pair.answer.length > 50 ? '...' : ''}`;
+            answerDiv.classList.add('answer');
+            li.appendChild(answerDiv);
+
+            li.addEventListener('click', () => {
+                promptInput.value = pair.question; // 質問テキストエリアに再表示
+                summaryOutput.value = pair.answer; // 回答テキストエリアに再表示
+            });
+
+            li.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                currentLi = li;
+                contextMenu.style.top = `${e.clientY}px`;
+                contextMenu.style.left = `${e.clientX}px`;
+                contextMenu.style.display = 'block';
+            });
+
+            savedSummariesList.appendChild(li);
+        });
+    }
+
+    // ページ読み込み時に保存された質問と回答を表示
+    displaySavedPairs();
+
+    // コンテキストメニューのクリックイベントリスナー
+    deleteOption.addEventListener('click', () => {
+        if (currentLi) {
+            const savedPairs = JSON.parse(localStorage.getItem('savedPairs') || '[]');
+            const index = Array.from(savedSummariesList.children).indexOf(currentLi);
+            savedPairs.splice(index, 1);
+            localStorage.setItem('savedPairs', JSON.stringify(savedPairs));
+            displaySavedPairs();
+            contextMenu.style.display = 'none';
+            currentLi = null;
+        }
+    });
+
+    // コンテキストメニューを閉じるリスナー
+    document.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+        currentLi = null;
+    });
+});
+        </script>
+</body>
+</html>
